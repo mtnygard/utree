@@ -1,0 +1,26 @@
+* Availability
+** COTS Software Failures
+** Hardware Failure
+*** (L, H) Power outage at site 1 requires traffic redirect to site 3 in < 3 seconds.
+*** (M, M) Restart after disk failure in < 5 minutes.
+*** (H, M) Network failure is detected and recovered in < 1.5 minutes.
+* Modifiability
+** New Product Categories
+** Change COTS
+*** (L, H) Add CORBA middleware in < 20 person-months.
+*** (H, L) Change web user interface in < 4 person-weeks.
+* Security
+** Data Confidentiality
+*** (L, H) Credit card transactions are secure 99.999% of the time.
+*** (L, H) Customer database authorization works 99.999% of the time.
+** Data Integrity
+* Performance
+** Data Latency
+*** (M, L) Minimize storage latency on customer DB to 200ms
+*** (H, M) Deliver video in real-time.
+** Transaction Throughput
+*** (M, M) Maximize average throughput to the authentication server.
+
+this is an accidental line wrap
+it will be ignored
+# so will this
