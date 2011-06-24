@@ -62,9 +62,11 @@ Output Format
 The output is a dot digraph, suitable for rendering however you like.
 
 Example:
+
     dot -Tpng -osample.png sample.dot
 
 Or, if you like shell-fu
+
     dot-utility sample.ut | dot -Tpng -osample.png
 
 
