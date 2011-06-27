@@ -60,8 +60,8 @@
   (emit-dependencies g)
   (println "}"))
 
-(defn -main [& args]
-  (doseq [f args]
+(defn text->dot-string [f]
+  (with-out-str 
     (->> f
          (slurp)
          (split-lines)
@@ -70,3 +70,5 @@
          (insert-root)
          (graphify)
          (emit-dot))))
+
+(defn -main [& args] (doseq [f args] (println  (text->dot-string f))))
