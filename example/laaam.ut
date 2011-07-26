@@ -1,0 +1,9 @@
+* [1] Performance
+** [2] Response Time
+*** [1] In steady state, a mailbox status update takes < 100 ms.
+*** [2] At peak load, a mailbox status update takes < 500 ms.
+** [1] Scalability
+* [2] Maintainability
+** Flexibility
+** Trainability
+** Extensibility
