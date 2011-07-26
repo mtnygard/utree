@@ -1,4 +1,4 @@
-(defproject dot-utility "0.0.1"
+(defproject dot-utility "0.0.2"
   :description "Create a utility tree from simple text format"
   :dependencies [[clojure "1.2.1"]
                  [clojure-contrib "1.2.0"]]
