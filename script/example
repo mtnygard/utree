@@ -1,0 +1,2 @@
+#! /bin/bash
+./dot-utility example/sample.ut | tee example/sample.dot | dot -Tpng -o example/sample.png
