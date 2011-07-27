@@ -11,10 +11,16 @@
   [line]
   (.startsWith line "*"))
 
+(defn parse-int
+  [s]
+  (try 
+    (Integer/parseInt s)
+    (catch NumberFormatException _ nil)))
+
 (defn parse-line
   [line]
   (let [stars (count (take-while #(= \* %) line))
-        rank (second (first (re-seq #"\s*\[([0-9]+)\]\s*" line)))
+        rank (parse-int (second (first (re-seq #"\s*\[([0-9]+)\]\s*" line))))
         label (clojure.string/trim (subs line stars))
         label (clojure.string/replace-first label #"\s*\[([0-9]+)\]\s*" "")]
     [stars label rank]))
@@ -30,23 +36,18 @@
   (when node
     (if (= level (get-node-attribute g node :level)) node (recur level g (first (prev-nodes g node))))))
 
-(defn graphify [nodemap]
+(defn connect-parents [nodemap]
   (reduce (fn [g [k1 k2]]
             (let [parent-level (dec (get-node-attribute g k2 :level))]
               (add-edge g (parent-at-level parent-level g k1) k2)))
           nodemap
           (partition 2 1 (sort (keys nodemap)))))
 
-(defn root-node []
-  (-> {}
-      (add-node 0)
-      (set-node-attributes 0 :level 0 :label "Utility")))
-
 (defn lines->graph [lines]
   (->> lines
        (filter quality-attribute?)
-       (reduce nodify (root-node))
-       (graphify)))
+       (reduce nodify (initial-graph))
+       (connect-parents)))
 
 (defn file->graph [f]
   (lines->graph (split-lines (slurp f))))

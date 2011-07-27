@@ -2,8 +2,8 @@
   (:use dot-utility.graph))
 
 (defn label-for-node
-  [{label :label rank :rank}]
-  (if rank (str label "\\n" rank) label))
+  [{label :label weight :weight}]
+  (if weight (format "%s\\nweight: %3.2f" label weight) label))
 
 (defn emit-rank
   [[r nodes]]
@@ -14,7 +14,7 @@
 
 (defn emit-ranks
   [g]
-  (doall (map emit-rank (group-by (fn [[k v]] (:level v)) g))))
+  (doall (map emit-rank (graph-by-ranks g))))
 
 (defn emit-dependencies
   [g]
