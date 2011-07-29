@@ -56,6 +56,63 @@ Example:
 If you want to add comments, version control IDs, or extra text, feel
 free. Other lines will be silently ignored.
 
+Ranking and Weighting
+---------------------
+
+You can add explicit ranking within a group by adding a number inside
+of square brackets. These ranks then get computed through a
+super-sophisticated algorithm to find out the relative weight of each
+quality scenario.
+
+Example:
+
+    * [1] Availability
+    ** [1] Hardware Failures
+    *** [2] Power outage at site 1 requires traffic redirect to site 3 in < 3 seconds.
+    *** [3] Restart after disk failure in < 5 minutes.
+    *** [1] Network failure is detected and recovered in < 1.5 minutes.
+    ** [1] COTS Software Failures
+    * [2] Security
+    ** [1] Confidentiality
+    ** [2] Integrity
+
+The reason for adding ranks explicitly, rather than just computing
+them based on the sequence is so you can capture the scenarios in one
+pass, then come back and rank them in a second pass, without having to
+shuffle lines and sections around. (Yes, I know that Emacs outline
+mode makes this easy. I use it, but I'm not going to force it on
+everyone. That would be cruel... some people just aren't cut out for
+Emacs.)
+
+The ranking at each level influences ranking of the child elements. In
+the example above, "Hardware Failures" is ranked first of two, so it
+gets a weight of 0.75. Security is second of two, so it gets
+0.25. Then within the hardware failures attribute, we have 3
+scenarios. The top ranked item "Network failure..." gets a local
+weight of 0.61111... times its inherited weight of 0.75 for an overall
+weight of 0.458333... The second ranked item has a local weight of
+0.2777... times its inherited weight of 0.75 for an overall weight of
+0.2083...
+
+These weights can then be used in a decision matrix to evaluate
+alternative solutions. When considering several architectures for a
+system, you can rate each architecture relative to how well it
+supports the quality scenarios. Multiply the ratings by the weights
+computed here, and you'll have a weighted score for each alternative.
+
+See [James McCaffrey's blog
+post](http://jamesmccaffrey.wordpress.com/2006/09/28/rank-order-centroids-in-testing/)
+about computing rank-ordered centroids. See also dot-utility.graph/roc
+for an implementation.
+
+Rank-ordered centroids are used in LAAAM (full support coming soon
+here!), which is an architecture-focused instantiation of the
+[Analytic Hierarchy
+Process](http://en.wikipedia.org/wiki/Analytic_Hierarchy_Process).
+
+At this time, weights only appear as annotations on the quality
+scenarios. Watch this space for more.
+
 Output Format
 ----------
 
