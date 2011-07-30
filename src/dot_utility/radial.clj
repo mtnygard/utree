@@ -43,53 +43,46 @@
   [polars]
   (reduce
    (fn [coords {radius :radius angle :angle}]
-     (conj coords {:x (* radius (cos angle))
-                   :y (* radius (sin angle))}))
+     (conj coords [(* radius (cos angle))
+                   (* radius (sin angle))]))
    []
    polars))
-
-(defn line
-  [^double x1 ^double y1 ^double x2 ^double y2]
-  (new Line2D$Double x1 y1 x2 y2))
-
-(defn radii
-  [pts]
-  (map (fn [{x :x y :y}] (line 0 0 x y)) pts))
 
 (defn hull
   [pts]
   (let [path (Path2D$Double.)
-        {x-org :x y-org :y} (first pts)
+        [x1 y1] (first pts)
         rest (reverse pts)]
-    (.moveTo path x-org y-org)
-    (doseq [{x :x y :y} rest]
+    (.moveTo path x1 y1)
+    (doseq [[x y] rest]
       (.lineTo path x y))
     path))
 
-(defn draw-radar
-  [^Graphics2D g ds w h]
-  (let [scale (/ (min w h) 2.0)
-        pen-width (/ 1.5 scale)
-        mapping (affine-mapping scale (- scale) (/ w 2) (/ h 2))
-        axes (polar->cartesian (axes ds))
-        scores (polar->cartesian (points ds))
-        hull (hull scores)
-        ]
-    #_(.scale g scale (- scale))
-    (.translate g (/ w 2.0) (/ h 2.0))
-    (.scale g scale (- scale))
-    (.setStroke g (BasicStroke. pen-width))
-    (.setColor g color-axis)
-    (doseq [l (radii axes)]
-      (.draw g l))
-    (.setStroke g (BasicStroke. (* 2 pen-width)))
-    (.setColor g color-score)
-    (doseq [l (radii scores)]
-      (.draw g l))
+(defn draw-hull
+  [^Graphics2D g ds]
+  (let [hull (hull (polar->cartesian (points ds)))]
     (.setColor g color-fill)
     (.fill g hull)
     (.setColor g color-outline)
     (.draw g hull)))
+
+(defn draw-radials
+  [^Graphics2D g polars]
+  (doseq [[x y] (polar->cartesian polars)]
+    (.draw g (Line2D$Double. 0 0 x y))))
+
+(defn draw-radar
+  [^Graphics2D g ds w h]
+  (let [scale (/ (min w h) 2.0)]
+    (.translate g (/ w 2.0) (/ h 2.0))
+    (.scale g scale (- scale))
+    (.setStroke g (BasicStroke. (/ 1.5 scale)))
+    (.setColor g color-axis)
+    (draw-radials g (axes ds))
+    (.setStroke g (BasicStroke. (/ 3.0 scale)))
+    (.setColor g color-score)
+    (draw-radials g (points ds))
+    (draw-hull g ds)))
 
 (defn antialias
   "Return a Graphics object with antialiasing turned on.
@@ -126,3 +119,12 @@
       (.setSize width height)
       (.show))
     radar))
+
+
+(def test-data
+     '[("Performance" 1 10)
+       ("Security" 2 5)
+       ("Scalability" 7 10)
+       ("Availability" 8 10)
+       ("Portability" 5 10)
+       ("Modifiability" 3 10)])
