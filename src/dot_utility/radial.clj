@@ -171,3 +171,6 @@
        ("Availability" 8 10)
        ("Portability" 5 10)
        ("Modifiability" 3 10)])
+
+(comment
+  (show-radar-display test-data))
