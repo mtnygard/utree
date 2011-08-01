@@ -1,6 +1,6 @@
 (ns dot-utility.radial
   (:import [javax.swing JFrame JPanel]
-           [java.awt BorderLayout RenderingHints Color Dimension Graphics2D BasicStroke]
+           [java.awt BorderLayout RenderingHints Color Dimension Graphics2D BasicStroke font.TextLayout]
            [java.awt.geom Path2D$Double Line2D$Double]))
 
 (def default-frame-options
@@ -12,6 +12,7 @@
 (defn cos [^double a] (Math/cos a))
 (defn sin [^double a] (Math/sin a))
 
+(def color-labels (Color. 96 96 104))
 (def color-axis (Color. 186 186 186))
 (def color-score (Color. 156 158 222))
 (def color-outline (Color. 109 110 155))
@@ -25,9 +26,7 @@
            ang (/ Math/PI 2.0)
            [[_ value domain] & more] (seq ds)]
       (if value
-        (recur (conj m
-                      {:angle ang
-                       :radius (scale-fn value domain)})
+        (recur (conj m [(scale-fn value domain) ang])
                (inc n)
                (+ ang theta)
                more)
@@ -39,14 +38,15 @@
 (defn axes [ds]
   (petals-on-the-rose ds (constantly 1.0)))
 
+(defn labels [ds]
+  (zipmap (map first ds) (petals-on-the-rose ds (constantly 1.0))))
+
 (defn polar->cartesian
-  [polars]
-  (reduce
-   (fn [coords {radius :radius angle :angle}]
-     (conj coords [(* radius (cos angle))
-                   (* radius (sin angle))]))
-   []
-   polars))
+  ([radius angle]
+     [(* radius (cos angle))
+      (* radius (sin angle))])
+  ([polars]
+     (map #(apply polar->cartesian %) polars)))
 
 (defn hull
   [pts]
@@ -58,31 +58,24 @@
       (.lineTo path x y))
     path))
 
-(defn draw-hull
-  [^Graphics2D g ds]
-  (let [hull (hull (polar->cartesian (points ds)))]
-    (.setColor g color-fill)
-    (.fill g hull)
-    (.setColor g color-outline)
-    (.draw g hull)))
+(def *graphics* nil)
+(def *scale* 1.0)
+(defn set-color [color] (.setColor *graphics* color))
+(defn draw [shape] (.draw *graphics* shape))
+(defn fill [shape] (.fill *graphics* shape))
+(defn translate [x-off y-off] (.translate *graphics* x-off y-off))
+(defn scale [x-scale y-scale] (.scale *graphics* x-scale y-scale))
+(defn set-pen-width [pw] (.setStroke *graphics* (BasicStroke. (/ pw *scale*))))
+(defn font [] (.getFont *graphics*))
+(defn set-font-size [pts] (.setFont *graphics* (.deriveFont (.getFont *graphics*) (float (/ pts *scale*)))))
+(defn line [x1 y1 x2 y2] (.draw *graphics* (Line2D$Double. x1 y1 x2 y2)))
+(defn text-layout [str] (TextLayout. str (font) (.getFontRenderContext *graphics*)))
+(defn draw-string [str x y] (.drawString *graphics* str x y))
 
-(defn draw-radials
-  [^Graphics2D g polars]
-  (doseq [[x y] (polar->cartesian polars)]
-    (.draw g (Line2D$Double. 0 0 x y))))
-
-(defn draw-radar
-  [^Graphics2D g ds w h]
-  (let [scale (/ (min w h) 2.0)]
-    (.translate g (/ w 2.0) (/ h 2.0))
-    (.scale g scale (- scale))
-    (.setStroke g (BasicStroke. (/ 1.5 scale)))
-    (.setColor g color-axis)
-    (draw-radials g (axes ds))
-    (.setStroke g (BasicStroke. (/ 3.0 scale)))
-    (.setColor g color-score)
-    (draw-radials g (points ds))
-    (draw-hull g ds)))
+(defmacro with-graphics [g & body]
+  `(binding [*graphics* (.create ~g)]
+     (do
+       ~@body)))
 
 (defn antialias
   "Return a Graphics object with antialiasing turned on.
@@ -93,12 +86,62 @@
     (doto (.create g)
       (.setRenderingHint RenderingHints/KEY_ANTIALIASING RenderingHints/VALUE_ANTIALIAS_ON))))
 
+(defmacro with-antialiasing [g & body]
+  `(with-graphics (antialias ~g) (do ~@body)))
+
+(defmacro with-scaling [scale & body]
+  `(binding [*scale* ~scale]
+     (with-graphics (doto (.create *graphics*) (.scale ~scale ~scale))
+       (do
+         ~@body))))
+
+(defn draw-hull
+  [ds]
+  (let [hull (hull (polar->cartesian (points ds)))]
+    (set-color color-fill)
+    (fill hull)
+    (set-color color-outline)
+    (draw hull)))
+
+(defn draw-radials
+  [polars]
+  (doseq [[x y] (polar->cartesian polars)]
+    (line 0 0 x y)))
+
+(defn draw-labels
+  [scale labels]
+  (doseq [[l [r theta]] labels]
+    (let [[cx cy] (polar->cartesian (* scale r) theta)
+          layout (text-layout l)
+          bounds (.getBounds layout)]
+      (.draw layout *graphics*
+                   (float (- cx (.x bounds) (/ (.width bounds) 2.0)))
+                   (float (- cy (.y bounds) (/ (.height bounds) 2.0)))))))
+
+(defn draw-radar
+  [ds w h]
+  (let [scale (/ (min (- w 60) (- h 60)) 2.0)]
+    (translate (/ w 2.0) (/ h 2.0))
+    (with-scaling scale
+      (set-pen-width 1.5)
+
+      (set-color color-axis)
+      (draw-radials (axes ds))
+      (set-pen-width 3.0)
+      (set-color color-score)
+      (draw-radials (points ds))
+      (draw-hull ds))
+    (set-color color-labels)
+    (set-font-size 16.0)
+    (draw-labels scale (labels ds))))
+
 (defn make-radar-panel
   [ds width height]
   (doto
       (proxy [javax.swing.JComponent] []
         (paintComponent [g]
-                        (draw-radar (antialias g) ds (.getWidth this) (.getHeight this))))))
+                        (with-antialiasing g
+                          (draw-radar ds (.getWidth this) (.getHeight this)))))))
 
 (defn show-radar-display
   "Display a new window with a radar plot of the given data items.
