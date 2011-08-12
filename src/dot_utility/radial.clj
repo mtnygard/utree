@@ -170,13 +170,18 @@
       (.show))
     radar))
 
+(defn type-from-file
+  [filename]
+  (or (second (first (re-seq #".*\.([^\.]*)$" filename))) "png"))
+
 (defn write-radar-display-to-file
   [ds filename & options]
   (let [{:keys [width height]} (into default-frame-options (apply hash-map options))
-        image (BufferedImage. width height BufferedImage/TYPE_INT_RGB)]
+        image (BufferedImage. width height BufferedImage/TYPE_INT_RGB)
+        image-type (type-from-file filename)]
     (with-antialiasing (.createGraphics image)
       (draw-radar ds width height))
-    (ImageIO/write image "jpeg" (File. filename))))
+    (ImageIO/write image image-type (File. filename))))
 
 (def test-data
      '[("Performance" 1 10)
