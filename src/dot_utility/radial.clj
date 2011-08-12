@@ -1,7 +1,10 @@
 (ns dot-utility.radial
   (:import [javax.swing JFrame JPanel]
            [java.awt BorderLayout RenderingHints Color Dimension Graphics2D BasicStroke font.TextLayout]
-           [java.awt.geom Path2D$Double Line2D$Double]))
+           [java.awt.geom Path2D$Double Line2D$Double]
+           [java.awt.image BufferedImage]
+           [java.io File]
+           [javax.imageio ImageIO]))
 
 (def default-frame-options
      {:title "Radar display"
@@ -17,6 +20,7 @@
 (def color-score (Color. 156 158 222))
 (def color-outline (Color. 109 110 155))
 (def color-fill (Color. 156 158 222 64))
+(def color-background (Color. 255 255 255))
 
 (defn petals-on-the-rose
   [ds scale-fn]
@@ -63,6 +67,7 @@
 (defn set-color [color] (.setColor *graphics* color))
 (defn draw [shape] (.draw *graphics* shape))
 (defn fill [shape] (.fill *graphics* shape))
+(defn fill-rect [x y width height] (.fillRect *graphics* x y width height))
 (defn translate [x-off y-off] (.translate *graphics* x-off y-off))
 (defn scale [x-scale y-scale] (.scale *graphics* x-scale y-scale))
 (defn set-pen-width [pw] (.setStroke *graphics* (BasicStroke. (/ pw *scale*))))
@@ -120,6 +125,8 @@
 
 (defn draw-radar
   [ds w h]
+  (set-color color-background)
+  (fill-rect 0 0 w h)
   (let [scale (/ (min (- w 60) (- h 60)) 2.0)]
     (translate (/ w 2.0) (/ h 2.0))
     (with-scaling scale
@@ -143,7 +150,7 @@
                         (with-antialiasing g
                           (draw-radar ds (.getWidth this) (.getHeight this)))))))
 
-(defn show-radar-display
+(defn show-radar-display-in-frame
   "Display a new window with a radar plot of the given data items.
 
    width and height control the size of the window.
@@ -163,6 +170,13 @@
       (.show))
     radar))
 
+(defn write-radar-display-to-file
+  [ds filename & options]
+  (let [{:keys [width height]} (into default-frame-options (apply hash-map options))
+        image (BufferedImage. width height BufferedImage/TYPE_INT_RGB)]
+    (with-antialiasing (.createGraphics image)
+      (draw-radar ds width height))
+    (ImageIO/write image "jpeg" (File. filename))))
 
 (def test-data
      '[("Performance" 1 10)
