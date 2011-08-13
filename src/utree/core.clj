@@ -1,6 +1,7 @@
 (ns utree.core
   (:use (clojure.java io))
-  (:require (utree [dot :as dot]))
+  (:require (utree [dot :as dot]
+                   [html :as html]))
   (:require (clojure [string :as str]))
   (:gen-class))
 
@@ -15,7 +16,8 @@
                 `(defcommand ~@command-def)) command-defs)))
 
 (defcommands
-  (dot "filename" "Generate dot files from utility trees" dot/dot))
+  (dot "filename" "Generate dot files from utility trees" dot/dot)
+  (html "filename" "Generate an HTML ordered list representing the tree" html/html-from-utility-tree))
 
 (defn lookup-command
   [ns name]
