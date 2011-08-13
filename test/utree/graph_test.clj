@@ -1,5 +1,5 @@
-(ns dot-utility.graph-test
-  (:use dot-utility.graph)
+(ns utree.graph-test
+  (:use utree.graph)
   (:use midje.sweet))
 
 (defn empty-graph [] {})

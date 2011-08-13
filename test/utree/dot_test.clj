@@ -1,5 +1,5 @@
-(ns dot-utility.dot-test
-  (:use (dot-utility graph dot))
+(ns utree.dot-test
+  (:use (utree graph dot))
   (:use midje.sweet))
 
 (facts "about labels"

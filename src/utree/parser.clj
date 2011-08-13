@@ -1,5 +1,5 @@
-(ns dot-utility.parser
-  (:use (dot-utility graph))
+(ns utree.parser
+  (:use (utree graph))
   (:require (clojure [string :as str])))
 
 (let [id-sequence (atom 0)]

@@ -1,8 +1,5 @@
-dot-utility
+utree - Utility Trees
 ==========
-
-Convert simple text format to a [dot graph](http://www.graphviz.org)
-for making utility trees.
 
 A utility tree is a picture that helps articular architectural
 qualities for a particular system. When faced with general terms like
@@ -15,6 +12,7 @@ A utility tree lets you get down to brass tacks, by talking about
 concrete "quality scenarios".  A single quality scenario will be
 attached to a facet of a quality. It should be measurable and
 quantitative.
+
 
 To learn more about utility trees, take a look at ["Evaluting Software
 Architectures"](http://www.amazon.com/gp/product/020170482X/ref=as_li_ss_tl?ie=UTF8&tag=michaelnygard-20&linkCode=as2&camp=217145&creative=399369&creativeASIN=020170482X), by Clements, Kazman, and Klein.
@@ -29,15 +27,31 @@ to create a standalone executable for your system.
 Usage
 ----------
 Run from the command line:
-    dot-utility _inputfile_
+    utree _subcommand_ _subcommand-options_
 
-Output goes to standard out. You can redirect it wherever you like.
+Subcommands are:
 
+* dot - Turn a utility tree into a [dot
+  graph](http://www.graphviz.org) for making images.
+
+(Yes, I know it's a bit silly to have subcommands when there's only one subcommand right now. More later.)
+
+Subcommand Usages
+-----------
+
+    utree dot [[--in-file | -f] filename]
+
+Use _filename_ as the input file (shown below). If _filename_ is not
+specified, read from standard input.
+
+Example:
+
+    utree dot -f sample.ut | dot -Tpng -osample.png
 
 Input Format
 ----------
 
-Picture don't version control well. I wanted a text-based format that
+Pictures don't version control well. I wanted a text-based format that
 would work well with all our other project artifacts.
 
 The input format is a text file. Lines starting with asterisks will
@@ -112,18 +126,4 @@ Process](http://en.wikipedia.org/wiki/Analytic_Hierarchy_Process).
 
 At this time, weights only appear as annotations on the quality
 scenarios. Watch this space for more.
-
-Output Format
-----------
-
-The output is a dot digraph, suitable for rendering however you like.
-
-Example:
-
-    dot -Tpng -osample.png sample.dot
-
-Or, if you like shell-fu
-
-    dot-utility sample.ut | dot -Tpng -osample.png
-
 

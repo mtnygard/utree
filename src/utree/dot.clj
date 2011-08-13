@@ -1,5 +1,5 @@
-(ns dot-utility.dot
-  (:use dot-utility.graph))
+(ns utree.dot
+  (:use (utree parser graph)))
 
 (defn label-for-node
   [{label :label weight :weight}]
@@ -32,3 +32,13 @@
   (emit-dependencies g)
   (println "}"))
 
+(defn file->dot-string
+  [f]
+  (with-out-str
+    (emit-dot
+     (assign-roc-weights
+      (file->graph f)))))
+
+(defn dot
+  [filename]
+  (println (file->dot-string filename)))

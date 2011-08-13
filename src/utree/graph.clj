@@ -1,4 +1,4 @@
-(ns dot-utility.graph)
+(ns utree.graph)
 
 (defn add-node [g n] (if (g n) g (assoc g n {:next #{} :prev #{}})))
 (defn set-node-attributes ([g n & avs] (assoc g n (apply assoc (g n) avs))))
