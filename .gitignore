@@ -5,5 +5,5 @@ pom.xml
 lib
 classes
 build
-utree
+/utree
 .DS_Store

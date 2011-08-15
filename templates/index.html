@@ -1,0 +1,198 @@
+<!doctype html>
+<!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
+<!--[if lt IE 7]> <html class="no-js ie6 oldie" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js ie7 oldie" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js ie8 oldie" lang="en"> <![endif]-->
+<!-- Consider adding an manifest.appcache: h5bp.com/d/Offline -->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+
+  <!-- Use the .htaccess and remove these lines to avoid edge case issues.
+       More info: h5bp.com/b/378 -->
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+  <title>Utility Tree</title>
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!-- Mobile viewport optimized: j.mp/bplateviewport -->
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+  <!-- Place favicon.ico and apple-touch-icon.png in the root directory: mathiasbynens.be/notes/touch-icons -->
+
+  <!-- CSS: implied media=all -->
+  <!-- CSS concatenated and minified via ant build script-->
+  <link rel="stylesheet" href="css/style.css">
+  <!-- end CSS-->
+
+  <!-- More ideas for your <head> here: h5bp.com/d/head-Tips -->
+
+  <!-- All JavaScript at the bottom, except for Modernizr / Respond.
+       Modernizr enables HTML5 elements & feature detects; Respond is a polyfill for min/max-width CSS3 Media Queries
+       For optimal performance, use a custom Modernizr build: www.modernizr.com/download/ -->
+  <script src="js/libs/modernizr-2.0.6.min.js"></script>
+
+  <script type="text/javascript" src="http://mbostock.github.com/d3/d3.js?1.25.0"></script>
+  <script type="text/javascript" src="http://mbostock.github.com/d3/d3.layout.js?1.25.0"></script>
+
+  <style type="text/css">
+    circle.node {
+    cursor: pointer;
+    fill: #fff;
+    stroke: steelblue;
+    stroke-width: 1.5px;
+    }
+
+    path.link {
+    fill: none;
+    stroke: #ccc;
+    stroke-width: 1.5px;
+    }
+  </style>
+  
+</head>
+
+<body>
+
+  <div id="container">
+    <div id="chart"></div>
+    <script type="text/javascript">
+      var w = 960, h = 2000, i = 0, duration = 500, root;
+
+      var tree = d3.layout.tree().size([h, w - 160]);
+
+      var diagonal = d3.svg.diagonal().projection(function(d) { return [d.y, d.x]; });
+
+      var vis = d3.select("body").append("svg:svg")
+      .attr("width", w)
+      .attr("height", h)
+      .append("svg:g")
+      .attr("transform", "translate(40,0)");
+
+      d3.json("utility-tree.json", function(json) {
+      json.x0 = 800;
+      json.y0 = 0;
+      update(root = json);
+      });
+
+      function update(source) {
+      // Compute the new tree layout.
+      var nodes = tree.nodes(root).reverse();
+
+      // Update the nodes…
+      var node = vis.selectAll("circle.node")
+      .data(nodes, function(d) { return d.id || (d.id = ++i); });
+
+      // Enter any new nodes at the parent's previous position.
+      node.enter().append("svg:circle")
+      .attr("class", "node")
+      .attr("cx", function(d) { return source.y0; })
+      .attr("cy", function(d) { return source.x0; })
+      .attr("r", 4.5)
+      .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; })
+      .on("click", click)
+      .transition()
+      .duration(duration)
+      .attr("cx", function(d) { return d.y; })
+      .attr("cy", function(d) { return d.x; });
+
+      // Transition nodes to their new position.
+      node.transition()
+      .duration(duration)
+      .attr("cx", function(d) { return d.y; })
+      .attr("cy", function(d) { return d.x; })
+      .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
+
+      // Transition exiting nodes to the parent's new position.
+      node.exit().transition()
+      .duration(duration)
+      .attr("cx", function(d) { return source.y; })
+      .attr("cy", function(d) { return source.x; })
+      .remove();
+
+      // Update the links…
+      var link = vis.selectAll("path.link")
+      .data(tree.links(nodes), function(d) { return d.target.id; });
+
+      // Enter any new links at the parent's previous position.
+      link.enter().insert("svg:path", "circle")
+      .attr("class", "link")
+      .attr("d", function(d) {
+      var o = {x: source.x0, y: source.y0};
+      return diagonal({source: o, target: o});
+      })
+      .transition()
+      .duration(duration)
+      .attr("d", diagonal);
+
+      // Transition links to their new position.
+      link.transition()
+      .duration(duration)
+      .attr("d", diagonal);
+
+      // Transition exiting nodes to the parent's new position.
+      link.exit().transition()
+      .duration(duration)
+      .attr("d", function(d) {
+      var o = {x: source.x, y: source.y};
+      return diagonal({source: o, target: o});
+      })
+      .remove();
+
+      // Stash the old positions for transition.
+      nodes.forEach(function(d) {
+      d.x0 = d.x;
+      d.y0 = d.y;
+      });
+      }
+
+      // Toggle children on click.
+      function click(d) {
+      if (d.children) {
+      d._children = d.children;
+      d.children = null;
+      } else {
+      d.children = d._children;
+      d._children = null;
+      }
+      update(d);
+      }
+
+      d3.select(self.frameElement).style("height", "2000px");
+
+    </script>
+  </div> <!--! end of #container -->
+
+
+  <!-- JavaScript at the bottom for fast page loading -->
+
+  <!-- Grab Google CDN's jQuery, with a protocol relative URL; fall back to local if offline -->
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+  <script>window.jQuery || document.write('<script src="js/libs/jquery-1.6.2.min.js"><\/script>')</script>
+
+
+  <!-- scripts concatenated and minified via ant build script-->
+  <script defer src="js/plugins.js"></script>
+  <script defer src="js/script.js"></script>
+  <!-- end scripts-->
+
+	
+  <!-- Change UA-XXXXX-X to be your site's ID -->
+  <script>
+    window._gaq = [['_setAccount','UAXXXXXXXX1'],['_trackPageview'],['_trackPageLoadTime']];
+    Modernizr.load({
+      load: ('https:' == location.protocol ? '//ssl' : '//www') + '.google-analytics.com/ga.js'
+    });
+  </script>
+
+
+  <!-- Prompt IE 6 users to install Chrome Frame. Remove this if you want to support IE 6.
+       chromium.org/developers/how-tos/chrome-frame-getting-started -->
+  <!--[if lt IE 7 ]>
+    <script src="//ajax.googleapis.com/ajax/libs/chrome-frame/1.0.3/CFInstall.min.js"></script>
+    <script>window.attachEvent('onload',function(){CFInstall.check({mode:'overlay'})})</script>
+  <![endif]-->
+  
+</body>
+</html>
