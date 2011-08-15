@@ -17,6 +17,18 @@
 (defn replace-path [full from to]
   (str/replace full from to))
 
+(defn children [g n]
+  )
+
+(defn graph-node->tree [g n]
+  (dissoc 
+   (merge (g n)
+          {:id n}
+          (when-let [children (seq (next-nodes g n))]
+            (hash-map :children (vec (map #(graph-node->tree g %) children)))))
+   :next
+   :prev))
+
 (defn graph->nested-list [g n] (list (g n) (map #(graph->nested-list g %) (next-nodes g n))))
 
 (defn copy-assets
@@ -36,5 +48,5 @@
    (io/file outdir "utility-tree.json")
    (with-out-str
      (json/pprint-json
-      (graph->nested-list
+      (graph-node->tree
        (file->graph filename) 0)))))
