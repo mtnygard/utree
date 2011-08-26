@@ -1,1 +1,7 @@
 /utility-tree.json
+/cljs
+/out
+js/cljs/
+js/goog/
+js/hello.js
+js/main.js
