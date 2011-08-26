@@ -1,0 +1,6 @@
+[submodule "vendor/cljs-d3"]
+	path = vendor/cljs-d3
+	url = https://github.com/mtnygard/cljs-d3
+[submodule "vendor/clojurescript"]
+	path = vendor/clojurescript
+	url = https://github.com/clojure/clojurescript.git
