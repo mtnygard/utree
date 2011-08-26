@@ -1,4 +1,8 @@
-.cake
+.cake/cake.log
+.cake/history
+.cake/*.pid
+.cake/run
+.cake/*.local
 pom.xml
 *.jar
 *.war

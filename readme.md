@@ -19,11 +19,27 @@ Architectures"](http://www.amazon.com/gp/product/020170482X/ref=as_li_ss_tl?ie=U
 
 Building
 ----------
-This uses [cake](http://github.com/ninjudd/cake) to build. Run:
+
+<b>At this time (August 26, 2011), cake has a bug in "cake run". You
+either need the patch from [issue #129](https://github.com/flatland/cake/pull/129),
+or use [my fork](https://github.com/mtnygard/cake/tree/fix-cake-run).</b>
+
+Building from scratch is a short process, though longer than I'd
+like. This uses [cake](http://github.com/flatland/cake) to build. Run
+all of these from the base of the project.
+
+1. Get the submodules
+
+    git submodule update --init
+
+2. Build Javascript
+
+    cake run compile_js.clj cljs
+
+3. Build the executable
+
     cake bin
-
-to create a standalone executable for your system.
-
+    
 Usage
 ----------
 Run from the command line:
@@ -33,23 +49,33 @@ Subcommands are:
 
 * dot - Turn a utility tree into a [dot
   graph](http://www.graphviz.org) for making images.
+* html - Create an interactive view of the utility tree.
 
-(Yes, I know it's a bit silly to have subcommands when there's only one subcommand right now. More later.)
+Subcommand: dot
+---------------
 
-Subcommand Usages
------------
+    utree dot _filename_
 
-    utree dot [[--in-file | -f] filename]
-
-Use _filename_ as the input file (shown below). If _filename_ is not
-specified, read from standard input.
+Use _filename_ as the input file (format below).
 
 Example:
 
-    utree dot -f sample.ut | dot -Tpng -osample.png
+    utree dot sample.ut | dot -Tpng -osample.png
+
+Subcommand: html
+----------------
+
+    utree html _filename_ _output_directory_
+
+Use _filename_ as the input file. Dump HTML and all supporting files
+into the output directory. Files in the output directory will get
+overwritten with the new output.
+
+*HTML output is incomplete. Right now, it just shows some sample D3
+ calls from Clojurescript. (Thanks [Kevin Lynagh](https://github.com/lynaghk/cljs-d3/)!)*
 
 Input Format
-----------
+------------
 
 Pictures don't version control well. I wanted a text-based format that
 would work well with all our other project artifacts.

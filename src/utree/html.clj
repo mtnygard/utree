@@ -1,6 +1,5 @@
 (ns utree.html
-  (:use (utree parser graph)
-        fleet)
+  (:use (utree parser graph))
   (:require [clojure.java.io :as io]
             [clojure.data.json :as json]
             [clojure.string :as str]))
@@ -16,9 +15,6 @@
 
 (defn replace-path [full from to]
   (str/replace full from to))
-
-(defn children [g n]
-  )
 
 (defn graph-node->tree [g n]
   (dissoc 
