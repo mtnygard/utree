@@ -1,0 +1,39 @@
+* [1] Security
+** [1] Integrity
+** [2] Confidentiality
+*** [1] Both outside the org as well as inside the organization.
+
+* [2] Usability
+** [1] Training 
+** [2] Successful task completion
+
+* [3] Performance
+** [1] Response time
+
+* [4] Modifiability
+** [1] Change cases
+*** [1] Additional reports on existing data sets
+** [2] New features
+*** [1] Adding datasets not currently available
+
+* [5] Availability
+** [1] Data feeds
+** [2] Administrative availability
+** [3] End user availability
+
+* [6] Testability
+** [1] Functionality testing
+** [2] User interface testing
+** [3] Regulatory/compliance testing
+
+* [7] Performance 
+** [1] Data latency
+** [2] Capacity
+
+* [8] Cost
+** [1] Development Cost
+** [2] Operations Cost
+
+* [9] Scalability 
+** [1] Data scaling
+** [2] Load scaling

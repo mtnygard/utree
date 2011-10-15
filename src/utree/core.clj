@@ -17,7 +17,7 @@
 
 (defcommands
   (dot "filename" "Generate dot files from utility trees" dot/dot)
-  (html "filename" "Generate an HTML ordered list representing the tree" html/html-from-utility-tree))
+  (html "filename outdir" "Generate an HTML ordered list representing the tree" html/html-from-utility-tree))
 
 (defn lookup-command
   [ns name]
@@ -38,7 +38,7 @@
   (println "Usage: utree [subcommand] command-options")
   (println)
   (doseq [c (subcommands ns)]
-    (println (interpose "\t" (map c [:name :args&opts :doc])))
+    (apply print (interpose "\t" (map c [:name :usage :doc])))
     (println)))
 
 (defn -main

@@ -34,7 +34,7 @@ all of these from the base of the project.
 
 2. Build Javascript
 
-    cake run compile_js.clj cljs
+    script/cljsc
 
 3. Build the executable
 

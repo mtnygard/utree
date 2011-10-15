@@ -1,12 +1,12 @@
 (ns hello
   (:require [cljs-d3.core :as d3]
-            [cljs-d3.scales :as scales]))
+            [cljs-d3.scale :as scale]))
 
 (defn rand [] ((.random js/Math)))
 
 (let [Width       400 ;;Width in pixels
       n           100 ;;Number of data
-      scale       (scales/linear :domain [0 1] :range [0 Width])
+      scale       (scale/linear :domain [0 1] :range [0 Width])
       
       sample-data (for [_ (range n)]
                     {:x (rand)
