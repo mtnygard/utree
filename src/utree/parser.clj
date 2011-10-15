@@ -2,10 +2,10 @@
   (:use (utree graph))
   (:require (clojure [string :as str])))
 
+;;; Section parser - utility attributes
+
 (let [id-sequence (atom 0)]
   (defn next-id [] (dosync (swap! id-sequence inc))))
-
-(defn split-lines [str] (filter (comp not empty?) (str/split str #"\n")))
 
 (defn quality-attribute?
   [line]
@@ -49,5 +49,37 @@
        (reduce nodify (initial-graph))
        (connect-parents)))
 
-(defn file->graph [f]
-  (lines->graph (split-lines (slurp f))))
+
+;;; Structure parser - sections and types
+
+(defn section-header?
+  [line]
+  (< 1 (count (take-while #(= \- %) line))))
+
+(defn section-type [[line]] (keyword (str/lower-case (str/trim (str/replace line #"^-+\s*" "")))))
+
+(defn split-sections [lines]
+  (partition-by section-header? lines))
+
+(defmulti parse-section (fn [world type lines] type))
+(defmethod parse-section :utility
+  [world name lines]
+  (into world (hash-map :utility (lines->graph lines))))
+
+(defmethod parse-section :alternatives
+  [world name lines]
+  (into world {:alternatives '()}))
+
+(defn parse-world [sects]
+  (reduce
+   (fn [world [header body]] (parse-section world (section-type header) body))
+   {}
+   (partition 2 sects))
+)
+
+(defn parse-file [filename]
+  (-> filename
+      (slurp)
+      (str/split #"\n")
+      (split-sections)
+      (parse-world)))

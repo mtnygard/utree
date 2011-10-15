@@ -80,9 +80,22 @@ Input Format
 Pictures don't version control well. I wanted a text-based format that
 would work well with all our other project artifacts.
 
-The input format is a text file. Lines starting with asterisks will
-appear in the output diagram. Everything else is ignored. There is no
-line-wrapping.
+The input format is a text file, consisting of one or more sections.
+Each section is marked by a header: a line starting with 2 or more
+hypens and a section type.
+
+Example:
+
+    -- Utility
+    # Quality attribute lines follow
+    
+    -- Alternatives
+    # Solution alternatives follow
+
+
+Quality attribute lines start with asterisks. These will appear in the
+output diagram. The number of lines indicates that attribute's nesting
+level. There is no line-wrapping.
 
 Example:
 
@@ -99,10 +112,9 @@ free. Other lines will be silently ignored.
 Ranking and Weighting
 ---------------------
 
-You can add explicit ranking within a group by adding a number inside
-of square brackets. These ranks then get computed through a
-super-sophisticated algorithm to find out the relative weight of each
-quality scenario.
+You can add explicit ranking within a group of quality attributes by
+adding a number inside of square brackets. These ranks eventually get
+turned into relative weights for each quality attribute.
 
 Example:
 

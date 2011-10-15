@@ -32,13 +32,13 @@
   (emit-dependencies g)
   (println "}"))
 
-(defn file->dot-string
-  [f]
+(defn graph->dot-string
+  [g]
   (with-out-str
     (emit-dot
-     (assign-roc-weights
-      (file->graph f)))))
+     (assign-roc-weights g))))
 
 (defn dot
   [filename]
-  (println (file->dot-string filename)))
+  (let [world (parse-file filename)]
+    (println (graph->dot-string (:utility world)))))

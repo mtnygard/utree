@@ -1,3 +1,5 @@
+-- Utility
+
 * [1] Security
 ** [1] Integrity
 ** [2] Confidentiality
@@ -37,3 +39,7 @@
 * [9] Scalability 
 ** [1] Data scaling
 ** [2] Load scaling
+
+-- Alternatives
+
+A: 
