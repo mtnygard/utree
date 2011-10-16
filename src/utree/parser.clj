@@ -49,37 +49,41 @@
        (reduce nodify (initial-graph))
        (connect-parents)))
 
-
 ;;; Structure parser - sections and types
 
-(defn section-header?
-  [line]
-  (< 1 (count (take-while #(= \- %) line))))
-
-(defn section-type [[line]] (keyword (str/lower-case (str/trim (str/replace line #"^-+\s*" "")))))
+(defn section-type [line]
+  (if (re-seq #"^-+" line)
+    (-> line
+        (str/replace #"^-+" "")
+        (str/trim)
+        (str/lower-case)
+        (keyword))))
 
 (defn split-sections [lines]
-  (partition-by section-header? lines))
+  (partition-by section-type lines))
 
-(defmulti parse-section (fn [world type lines] type))
-(defmethod parse-section :utility
-  [world name lines]
-  (into world (hash-map :utility (lines->graph lines))))
+(defn keywordize-headers [coll]
+  (let [headers (map (comp section-type first) (take-nth 2 coll))
+        bodies (take-nth 2 (drop 1 coll))]
+    (map vector headers bodies)))
 
-(defmethod parse-section :alternatives
-  [world name lines]
-  (into world {:alternatives '()}))
+(def parsers
+  {:utility  lines->graph
+   :alternatives (fn [body] [])})
 
 (defn parse-world [sects]
-  (reduce
-   (fn [world [header body]] (parse-section world (section-type header) body))
-   {}
-   (partition 2 sects))
-)
+  (loop [world {}
+         ss (seq sects)]
+    (let [[header body] (first ss)]
+      (if (and header body)
+        (recur (assoc world header ((parsers header) body))
+               (next ss))
+        world))))
 
 (defn parse-file [filename]
   (-> filename
       (slurp)
       (str/split #"\n")
       (split-sections)
+      (keywordize-headers)
       (parse-world)))
