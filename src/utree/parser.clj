@@ -1,5 +1,5 @@
 (ns utree.parser
-  (:use (utree graph))
+  (:use (utree graph solution))
   (:require (clojure [string :as str])))
 
 ;;; Section parser - utility attributes
@@ -21,8 +21,8 @@
   [line]
   (let [stars (count (take-while #(= \* %) line))
         rank (parse-int (second (first (re-seq #"\s*\[([0-9]+)\]\s*" line))))
-        label (clojure.string/trim (subs line stars))
-        label (clojure.string/replace-first label #"\s*\[([0-9]+)\]\s*" "")]
+        label (str/trim (subs line stars))
+        label (str/replace-first label #"\s*\[([0-9]+)\]\s*" "")]
     [stars label rank]))
 
 (defn nodify
@@ -43,11 +43,51 @@
           nodemap
           (partition 2 1 (sort (keys nodemap)))))
 
-(defn lines->graph [lines]
+(defn parse-quality-attributes [world lines]
   (->> lines
        (filter quality-attribute?)
        (reduce nodify (initial-graph))
        (connect-parents)))
+
+;;; Section parser - solution alternatives
+
+(defn solution-title? [line] (.startsWith line "*"))
+
+(defn score-lines [soln] (filter #(re-seq #"^[a-zA-Z/ ]*:\s*[0-9]+/[0-9]+$" %) (solution-description soln)))
+
+(defn quality-label [score-line]
+  (-> score-line
+      (str/split #":")
+      (first)
+      (str/split #"/")))
+
+(defn quality-score [score-line]
+  (-> score-line
+      (str/split #":")
+      (second)
+      (read-string)))
+
+(defn scores-from-description
+  [soln world]
+  (for [score-line (score-lines soln)]
+    [(find-node (:utility world) (quality-label score-line)) (quality-score score-line)]))
+
+(defn parse-scores [soln world]
+  (loop [soln soln
+         scores (scores-from-description soln world)]
+    (if-let [[quality-node score] (first scores)]
+      (recur (add-solution-score soln quality-node score)
+             (next scores))
+      soln)))
+
+(defn parse-solutions
+  "Return a seq of solutions."
+  [world lines]
+  (let [lines (drop-while (comp not solution-title?) lines)]
+    (for [[title desc] (partition 2 (partition-by solution-title? lines))]
+      (-> (make-solution title)
+          (add-solution-description desc)
+          (parse-scores world)))))
 
 ;;; Structure parser - sections and types
 
@@ -68,15 +108,15 @@
     (map vector headers bodies)))
 
 (def parsers
-  {:utility  lines->graph
-   :alternatives (fn [body] [])})
+  {:utility      parse-quality-attributes
+   :alternatives parse-solutions})
 
 (defn parse-world [sects]
   (loop [world {}
          ss (seq sects)]
     (let [[header body] (first ss)]
       (if (and header body)
-        (recur (assoc world header ((parsers header) body))
+        (recur (assoc world header ((parsers header) world body))
                (next ss))
         world))))
 

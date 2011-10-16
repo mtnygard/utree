@@ -42,4 +42,96 @@
 
 -- Alternatives
 
-A: 
+* Rails front-end, Riak with Riak Search backend
+
+An extended description of the architecture goes here. This is in
+plain text format. No funny business with HTML escaping. I may
+contemplate markdown formatting or image insertion at some point, but
+right now I need to get the basics done first.
+
+Blank lines are OK, they'll be included in the long description.
+
+Security: 7/10
+Usability: 8/10
+Performance/Response Time: 5/10
+Modifiability: 9/10
+Availability: 3/10
+Testability: 10/10
+Performance/Data latency: 5/10
+Performance/Capacity: 3/10
+Cost/Development Cost: 5/10
+Cost/Operations Cost: 7/10
+Scalability/Data scaling: 10/10
+Scalability/Load scaling: 5/10
+
+* Rails front-end, MySQL storage, Solr searching
+
+Each line in the extended description is checked to see if it matches
+the format of a quality attribute above. This is a pathlike notation
+for the attribute, followed by a colon, followed by a rational
+expression for the score.
+
+The description can mix scores and text. All of the text will go
+through to the output, including the scores. So, you can interleave
+commentary and scores, for example, to explain why a particular
+solution has a high or low score on the attribute.
+
+E.g., Rails + MySQL + Solr should rank high on the expertise-based
+attributes.
+
+Cost/Development Cost: 9/10
+Cost/Operations Cost: 9/10
+Modifiability: 9/10
+Testability: 10/10
+
+This assumes delivery to an organization that already knows Rails, of
+course!
+
+Rails does somewhat less well on capacity and scaling, due to it's
+poor use of memory when faced with concurrent workloads.
+
+Scalability/Load scaling: 3/10
+Performance/Capacity: 3/10
+
+MySQL has well-understood attributes for data latency, consistency,
+and high-availability.
+
+Availability: 7/10
+Performance/Data latency: 9/10
+
+Security issues are common with any RDBMS. Mitigations are well-known
+but must be applied consistently.
+
+Security: 5/10
+
+Finally, filling in some otherwise missing scores
+
+Performance/Response Time: 8/10
+Usability: 8/10
+
+* Scala + Lift front-end, Riak + Riak Search backend
+
+Little description here, as I think I've made my point about the input
+file format already.
+
+One final comment... it may be obvious or not, but these scores should
+always take the delivery context into account. For internal delivery,
+consider the people who will be maintaining and operating the
+system. If you are a consultant, take the client's environment into
+account. You may regard a stack as highly operable, but if the
+operations team doesn't know how to monitor or manage it, then it
+won't be highly operable in that environment. The same goes for modifiability,
+of course!
+
+Security: 7/10
+Usability: 6/10
+Performance/Response Time: 8/10
+Modifiability: 7/10
+Availability: 5/10
+Testability: 7/10
+Performance/Data latency: 5/10
+Performance/Capacity: 7/10
+Cost/Development Cost: 2/10
+Cost/Operations Cost: 3/10
+Scalability/Data scaling: 10/10
+Scalability/Load scaling: 8/10

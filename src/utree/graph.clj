@@ -1,4 +1,5 @@
-(ns utree.graph)
+(ns utree.graph
+  (:require (clojure [set :as set])))
 
 (defn add-node [g n] (if (g n) g (assoc g n {:next #{} :prev #{}})))
 (defn set-node-attributes ([g n & avs] (assoc g n (apply assoc (g n) avs))))
@@ -51,3 +52,19 @@
 (defn assign-roc-weights
   [g]
   (assign-roc-weight g 0 1 1.0))
+
+(defn find-node
+  "Find a node by the sequence of labels from root."
+  ([g lseq]
+     (if-let [nodes (find-node g [0] lseq)]
+       (first nodes)
+       (do
+         (println "WARNING: Could not locate quality attribute for label '" lseq "'")
+         nil)))
+  
+  ([g nodes lseq]
+     (if-let [child-label (first lseq)]
+       (find-node g 
+                  (filter #(= child-label (get-node-attribute g % :label)) (apply set/union (map #(next-nodes g %) nodes)))
+                  (rest lseq))
+       nodes)))
