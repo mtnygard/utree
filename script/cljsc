@@ -1,2 +1,0 @@
-#! /usr/bin/env bash
-cake run compile_js.clj cljs
