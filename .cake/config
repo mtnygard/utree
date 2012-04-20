@@ -1,1 +1,0 @@
-project.classpath=vendor/cljs-d3/src/cljs:vendor/cljs-d3/src/clj:vendor/clojurescript/src/clj:vendor/clojurescript/src/cljs:vendor/clojurescript/lib/compiler.jar:vendor/clojurescript/lib/goog.jar

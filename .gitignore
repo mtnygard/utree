@@ -1,13 +1,7 @@
-.cake/cake.log
-.cake/history
-.cake/*.pid
-.cake/run
-.cake/*.local
-pom.xml
+.lein-deps-sum
 *.jar
 *.war
 lib
 classes
 build
-/utree
 .DS_Store

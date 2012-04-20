@@ -1,5 +1,4 @@
-(defproject utree "0.0.2"
+(defproject utree "0.0.3"
   :description "Create a utility tree from simple text format"
-  :dependencies [[clojure "1.3.0-beta1"]
-                 [org.clojure/data.json "0.1.1"]]
+  :dependencies [[clojure "1.4.0"]]
   :main utree.core)
