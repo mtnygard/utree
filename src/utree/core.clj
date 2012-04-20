@@ -1,6 +1,7 @@
 (ns utree.core
   (:require (utree.dot))
-  (:require (clojure [string :as str]))
+  (:require (clojure [string :as str])
+            (clojure [pprint :only (cl-format)]))
   (:gen-class))
 
 (defn ^{:cli true :usage "filename"} dot
@@ -8,9 +9,14 @@
   [filename]
   (utree.dot/dot filename))
 
+(defn ^{:cli true :usage ""} help
+  "Display help message"
+  []
+  (command-help))
+
 (defn subcommands
   []
-  (filter :cli (map (fn [[k v]] (meta v)) (ns-publics 'utree.core))))
+  (filter :cli (map meta (vals (ns-publics 'utree.core)))))
 
 (defn find-first
   [pred coll]
@@ -26,11 +32,11 @@
 
 (defn command-help
   []
-  (println "Usage: utree [subcommand] command-options")
+  (println "Usage: utree subcommand [command-options]")
   (println "\nSubcommands:")
   (doseq [c (subcommands)]
-    (apply print (interpose "\t" (map c [:name :usage :doc])))
-    (println)))
+    (clojure.pprint/cl-format true "~10A~30A~40A~%" (:name c) (:usage c) (:doc c)))
+  (println))
 
 (defn -main
   ([] (command-help))
