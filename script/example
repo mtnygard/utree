@@ -1,2 +1,2 @@
 #! /bin/bash
-java -cp `lein classpath` utree.core dot example/sample.ut | tee example/sample.dot | dot -Tpng -o example/sample.png
+java -cp `lein2 classpath` utree.core dot example/sample.ut | tee example/sample.dot | dot -Tpng -o example/sample.png
