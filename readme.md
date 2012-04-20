@@ -20,30 +20,18 @@ Architectures"](http://www.amazon.com/gp/product/020170482X/ref=as_li_ss_tl?ie=U
 Building
 ----------
 
-<b>At this time (August 26, 2011), cake has a bug in "cake run". You
-either need the patch from [issue #129](https://github.com/flatland/cake/pull/129),
-or use [my fork](https://github.com/mtnygard/cake/tree/fix-cake-run).</b>
-
 Building from scratch is a short process, though longer than I'd
-like. This uses [cake](http://github.com/flatland/cake) to build. Run
+like. This uses [Leiningen 2](https://github.com/technomancy/leiningen/wiki/Upgrading) to build. Run
 all of these from the base of the project.
 
-1. Get the submodules
+1. Build a jar
 
-    git submodule update --init
-
-2. Build Javascript
-
-    script/cljsc
-
-3. Build the executable
-
-    cake bin
+    lein2 jar
     
 Usage
 ----------
 Run from the command line:
-    utree _subcommand_ _subcommand-options_
+    java -cp `lein2 classpath` utree.core _subcommand_ _subcommand-options_
 
 Subcommands are:
 
