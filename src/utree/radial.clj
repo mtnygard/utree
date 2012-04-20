@@ -62,8 +62,8 @@
       (.lineTo path x y))
     path))
 
-(def *graphics* nil)
-(def *scale* 1.0)
+(def ^:dynamic *graphics* nil)
+(def ^:dynamic *scale* 1.0)
 (defn set-color [color] (.setColor *graphics* color))
 (defn draw [shape] (.draw *graphics* shape))
 (defn fill [shape] (.fill *graphics* shape))
@@ -97,8 +97,11 @@
 (defmacro with-scaling [scale & body]
   `(binding [*scale* ~scale]
      (with-graphics (doto (.create *graphics*) (.scale ~scale ~scale))
-       (do
-         ~@body))))
+       (do ~@body))))
+
+(defmacro with-translation [tx ty & body]
+  `(with-graphics (doto (.create *graphics*) (.translate (double ~tx) (double ~ty)))
+     (do ~@body)))
 
 (defn draw-hull
   [ds]
@@ -113,25 +116,38 @@
   (doseq [[x y] (polar->cartesian polars)]
     (line 0 0 x y)))
 
+(defn draw-centered-string [cx cy str]
+  (let [layout (text-layout str)
+        bounds (.getBounds layout)]
+    (.draw layout *graphics*
+           (float (- cx (.x bounds) (/ (.width bounds) 2.0)))
+           (float (- cy (.y bounds) (/ (.height bounds) 2.0))))))
+
 (defn draw-labels
   [scale labels]
   (doseq [[l [r theta]] labels]
-    (let [[cx cy] (polar->cartesian (* scale r) theta)
-          layout (text-layout l)
-          bounds (.getBounds layout)]
-      (.draw layout *graphics*
-                   (float (- cx (.x bounds) (/ (.width bounds) 2.0)))
-                   (float (- cy (.y bounds) (/ (.height bounds) 2.0)))))))
+    (let [[cx cy] (polar->cartesian (* scale r) theta)]
+      (draw-centered-string cx cy l))))
+
+(defn draw-title
+  [w h t]
+  (set-color color-labels)
+  (set-font-size 24.0)
+  (let [tl (text-layout t)
+        text-height (.getHeight (.getBounds tl))]
+    (prn text-height)
+    (draw-centered-string (/ w 2) text-height t)
+    text-height))
 
 (defn draw-radar
-  [ds w h]
+  [ds w h t]
   (set-color color-background)
   (fill-rect 0 0 w h)
-  (let [scale (/ (min (- w 60) (- h 60)) 2.0)]
-    (translate (/ w 2.0) (/ h 2.0))
+  (let [scale (/ (min (- w 60) (- h 60)) 2.0)
+        yoff (draw-title w h t)]
+    (translate (/ w 2.0) (+ yoff (/ h 2.0)))
     (with-scaling scale
       (set-pen-width 1.5)
-
       (set-color color-axis)
       (draw-radials (axes ds))
       (set-pen-width 3.0)
@@ -143,12 +159,12 @@
     (draw-labels scale (labels ds))))
 
 (defn make-radar-panel
-  [ds width height]
+  [ds width height title]
   (doto
       (proxy [javax.swing.JComponent] []
         (paintComponent [g]
                         (with-antialiasing g
-                          (draw-radar ds (.getWidth this) (.getHeight this)))))))
+                          (draw-radar ds (.getWidth this) (.getHeight this) title))))))
 
 (defn show-radar-display-in-frame
   "Display a new window with a radar plot of the given data items.
@@ -159,7 +175,7 @@
    that the Performance measure scored 3 out of a possible 10. (All scores start from 0.)"
   [ds & options]
   (let [{:keys [width height title]} (into default-frame-options (apply hash-map options))
-        radar (make-radar-panel ds width height)
+        radar (make-radar-panel ds width height title)
         panel (doto (JPanel.)
                 (.setBorder (javax.swing.BorderFactory/createEmptyBorder 20 20 20 20))
                 (.setLayout (BorderLayout.))
@@ -176,20 +192,24 @@
 
 (defn write-radar-display-to-file
   [ds filename & options]
-  (let [{:keys [width height]} (into default-frame-options (apply hash-map options))
+  (let [{:keys [width height title]} (into default-frame-options (apply hash-map options))
         image (BufferedImage. width height BufferedImage/TYPE_INT_RGB)
         image-type (type-from-file filename)]
     (with-antialiasing (.createGraphics image)
-      (draw-radar ds width height))
+      (draw-radar ds width height title))
     (ImageIO/write image image-type (File. filename))))
 
-(def test-data
-     '[("Performance" 1 10)
-       ("Security" 2 5)
-       ("Scalability" 7 10)
-       ("Availability" 8 10)
-       ("Portability" 5 10)
-       ("Modifiability" 3 10)])
 
 (comment
-  (show-radar-display test-data))
+  (def test-data
+    '[("Performance" 1 10)
+      ("Security" 2 5)
+      ("Scalability" 7 10)
+      ("Availability" 8 10)
+      ("Portability" 5 10)
+      ("Modifiability" 3 10)])
+
+  (show-radar-display-in-frame test-data :title "Solution A")
+
+  (write-radar-display-to-file test-data "/tmp/radar.png" :title "Solution A")
+  )
