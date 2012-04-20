@@ -1,13 +1,18 @@
 (ns utree.core
-  (:require (utree.dot))
+  (:require (utree.dot)
+            (utree [dot :as dot]
+                   [parser :as p]
+                   [graph :as g]))
   (:require (clojure [string :as str])
             (clojure [pprint :only (cl-format)]))
   (:gen-class))
 
 (defn ^{:cli true :usage "filename"} dot
   "Generate dot files from utility trees"
-  [filename]
-  (utree.dot/dot filename))
+  [[filename & _]]
+  (let [world (p/parse-file filename)
+        utility (g/assign-roc-weights (:utility world))]
+    (dot/emit-dot utility)))
 
 (defn ^{:cli true :usage ""} help
   "Display help message"
@@ -16,7 +21,7 @@
 
 (defn subcommands
   []
-  (filter :cli (map meta (vals (ns-publics 'utree.core)))))
+  (filter #(:cli (meta %)) (vals (ns-publics 'utree.core))))
 
 (defn find-first
   [pred coll]
@@ -24,7 +29,7 @@
 
 (defn var-named?
   [n v]
-  (= (:name v) (symbol n)))
+  (= (:name (meta v)) (symbol n)))
 
 (defn lookup-command
   [name]
