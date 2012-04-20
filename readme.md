@@ -31,14 +31,18 @@ all of these from the base of the project.
 Usage
 ----------
 Run from the command line:
-    java -cp `lein2 classpath` utree.core _subcommand_ _subcommand-options_
+    java -cp `lein2 classpath` utree.core _command_ _command-options_
+
+Alternatively, you can build a standalone jar and run that directly:
+    lein2 uberjar
+    java -cp target/utree-0.0.3-standalone.jar _command_ _command-options_
 
 Subcommands are:
 
-* dot - Turn a utility tree into a [dot
-  graph](http://www.graphviz.org) for making images.
+* dot - Turn a utility tree into a [dot graph](http://www.graphviz.org) for making images.
+* radar-plots - Render radar plots as PNGs for the solution alternatives in the input file.
 
-Subcommand: dot
+Command: dot
 ---------------
 
     utree dot _filename_
@@ -48,6 +52,19 @@ Use _filename_ as the input file (format below).
 Example:
 
     utree dot sample.ut | dot -Tpng -osample.png
+
+Command: radar-plots
+--------------------
+
+Use _filename_ as the input file. Render PNGs named `solution_0.png`
+through `solution_n.png`.
+
+Example:
+
+    java -cp target/utree-0.0.3-standlone.jar radar-plots example/alternatives.ut
+    
+This will create solution\_0.png through solution\_3.png, showing how
+the different alternative solutions score on the axes that matter.
 
 Input Format
 ------------
