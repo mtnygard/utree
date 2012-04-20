@@ -58,25 +58,24 @@
 (defn quality-label [score-line]
   (-> score-line
       (str/split #":")
-      (first)
-      (str/split #"/")))
+      (first)))
 
 (defn quality-score [score-line]
   (-> score-line
-      (str/split #":")
+      (str/split #":[ \t]*")
       (second)
-      (read-string)))
+      (str/split #"/")))
 
 (defn scores-from-description
   [soln world]
   (for [score-line (score-lines soln)]
-    [(find-node (:utility world) (quality-label score-line)) (quality-score score-line)]))
+    (list* (quality-label score-line) (quality-score score-line))))
 
 (defn parse-scores [soln world]
   (loop [soln soln
          scores (scores-from-description soln world)]
-    (if-let [[quality-node score] (first scores)]
-      (recur (add-solution-score soln quality-node score)
+    (if-let [[quality-node v mx] (first scores)]
+      (recur (add-solution-score soln quality-node v mx)
              (next scores))
       soln)))
 

@@ -8,8 +8,8 @@
 
 (def default-frame-options
      {:title "Radar display"
-      :width 400
-      :height 400})
+      :width 600
+      :height 600})
 
 (def pi2 (* 2.0 Math/PI))
 (defn cos [^double a] (Math/cos a))
@@ -27,7 +27,7 @@
   (let [theta (/ pi2 (count ds))]
     (loop [m []
            n 0
-           ang (/ Math/PI 2.0)
+           ang (- (/ Math/PI 2.0))
            [[_ value domain] & more] (seq ds)]
       (if value
         (recur (conj m [(scale-fn value domain) ang])
@@ -135,7 +135,6 @@
   (set-font-size 24.0)
   (let [tl (text-layout t)
         text-height (.getHeight (.getBounds tl))]
-    (prn text-height)
     (draw-centered-string (/ w 2) text-height t)
     text-height))
 
