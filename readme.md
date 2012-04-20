@@ -49,7 +49,6 @@ Subcommands are:
 
 * dot - Turn a utility tree into a [dot
   graph](http://www.graphviz.org) for making images.
-* html - Create an interactive view of the utility tree.
 
 Subcommand: dot
 ---------------
@@ -61,18 +60,6 @@ Use _filename_ as the input file (format below).
 Example:
 
     utree dot sample.ut | dot -Tpng -osample.png
-
-Subcommand: html
-----------------
-
-    utree html _filename_ _output_directory_
-
-Use _filename_ as the input file. Dump HTML and all supporting files
-into the output directory. Files in the output directory will get
-overwritten with the new output.
-
-*HTML output is incomplete. Right now, it just shows some sample D3
- calls from Clojurescript. (Thanks [Kevin Lynagh](https://github.com/lynaghk/cljs-d3/)!)*
 
 Input Format
 ------------
