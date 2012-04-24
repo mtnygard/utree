@@ -20,17 +20,17 @@ Architectures"](http://www.amazon.com/gp/product/020170482X/ref=as_li_ss_tl?ie=U
 Building
 ----------
 
-Building from scratch is a short process, though longer than I'd
-like. This uses [Leiningen 2](https://github.com/technomancy/leiningen/wiki/Upgrading) to build. Run
+This uses [Leiningen 2](https://github.com/technomancy/leiningen/wiki/Upgrading) to build. Run
 all of these from the base of the project.
 
-1. Build a jar
+To build a standalone jar file:
 
     lein2 jar
     
 Usage
 ----------
 Run from the command line:
+
     java -cp `lein2 classpath` utree.core _command_ _command-options_
 
 Alternatively, you can build a standalone jar and run that directly:
@@ -45,13 +45,13 @@ Subcommands are:
 Command: dot
 ---------------
 
-    utree dot _filename_
+    java -cp `lein2 classpath` utree.core dot _filename_
 
 Use _filename_ as the input file (format below).
 
 Example:
 
-    utree dot sample.ut | dot -Tpng -osample.png
+    java -cp `lein2 classpath` utree.core dot sample.ut | dot -Tpng -osample.png
 
 Command: radar-plots
 --------------------
@@ -94,9 +94,9 @@ Example:
     * Availability
     ** COTS Software Failures
     ** Hardware Failure
-    *** (L, H) Power outage at site 1 requires traffic redirect to site 3 in < 3 seconds.
-    *** (M, M) Restart after disk failure in < 5 minutes.
-    *** (H, M) Network failure is detected and recovered in < 1.5 minutes.
+    *** Power outage at site 1 requires traffic redirect to site 3 in < 3 seconds.
+    *** Restart after disk failure in < 5 minutes.
+    *** Network failure is detected and recovered in < 1.5 minutes.
 
 If you want to add comments, version control IDs, or extra text, feel
 free. Other lines will be silently ignored.
