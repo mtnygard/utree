@@ -1,2 +1,2 @@
-#! /bin/bash
+#! /usr/bin/env bash
 java -cp `lein2 classpath` utree.core dot example/sample.ut | tee example/sample.dot | dot -Tpng -o example/sample.png
