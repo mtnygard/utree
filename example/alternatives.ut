@@ -94,10 +94,12 @@ Scalability/Load scaling: 3/10
 Performance/Capacity: 3/10
 
 MySQL has well-understood attributes for data latency, consistency,
-and high-availability.
+and high-availability, but we know that it has upper bounds on the
+size of data it can support.
 
 Availability: 7/10
 Performance/Data latency: 9/10
+Scalability/Data scaling: 5/10
 
 Security issues are common with any RDBMS. Mitigations are well-known
 but must be applied consistently.
