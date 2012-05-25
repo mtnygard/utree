@@ -47,9 +47,14 @@
   (dot/emit-dot (:utility world))
   world)
 
+(defn underscore [s] (str/replace s #" " "_"))
+
 (defn emit-radar
   [idx soln]
-  (r/write-radar-display-to-file (s/solution-scores soln) (str "solution_" idx ".png")))
+  (r/write-radar-display-to-file
+   (s/solution-scores soln)
+   (str (underscore (s/solution-title soln)) ".png")
+   :title (s/solution-title soln)))
 
 (defn emit-radars
   [world]

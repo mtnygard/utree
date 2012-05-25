@@ -53,7 +53,7 @@
 
 (defn solution-title? [line] (.startsWith line "*"))
 
-(defn score-lines [soln] (filter #(re-seq #"^[a-zA-Z/ ]*:\s*[0-9]+/[0-9]+$" %) (solution-description soln)))
+(defn score-lines [soln] (filter #(re-seq #"^[a-zA-Z/, ]*:\s*[0-9]+/[0-9]+$" %) (solution-description soln)))
 
 (defn quality-label [score-line]
   (-> score-line
@@ -83,8 +83,8 @@
   "Return a seq of solutions."
   [world lines]
   (let [lines (drop-while (comp not solution-title?) lines)]
-    (for [[title desc] (partition 2 (partition-by solution-title? lines))]
-      (-> (make-solution title)
+    (for [[[title-ln] desc] (partition 2 (partition-by solution-title? lines))]
+      (-> (make-solution (str/replace title-ln #"^\* " ""))
           (add-solution-description desc)
           (parse-scores world)))))
 

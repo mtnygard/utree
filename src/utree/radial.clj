@@ -27,12 +27,12 @@
   (let [theta (/ pi2 (count ds))]
     (loop [m []
            n 0
-           ang (- (/ Math/PI 2.0))
+           ang (/ Math/PI 2.0)
            [[_ value domain] & more] (seq ds)]
       (if value
         (recur (conj m [(scale-fn value domain) ang])
                (inc n)
-               (+ ang theta)
+               (- ang theta)
                more)
         m))))
 
