@@ -15,27 +15,27 @@ quantitative.
 
 
 To learn more about utility trees, take a look at ["Evaluting Software
-Architectures"](http://www.amazon.com/gp/product/020170482X/ref=as_li_ss_tl?ie=UTF8&tag=michaelnygard-20&linkCode=as2&camp=217145&creative=399369&creativeASIN=020170482X), by Clements, Kazman, and Klein.
+Architectures"](http://www.amazon.com/gp/product/020170482X/ref=as_li_tl?ie=UTF8&camp=1789&creative=390957&creativeASIN=020170482X&linkCode=as2&tag=wwwmichaelnyg-20&linkId=Q2IV6QM3BIYNDOH4), by Clements, Kazman, and Klein.
 
 Building
 ----------
 
-This uses [Leiningen 2](https://github.com/technomancy/leiningen/wiki/Upgrading) to build. Run
+This uses [Leiningen](https://github.com/technomancy/leiningen/wiki/Upgrading) to build. Run
 all of these from the base of the project.
 
 To build a standalone jar file:
 
-    lein2 jar
-    
+    lein jar
+
 Usage
 ----------
 Run from the command line:
 
-    java -cp `lein2 classpath` utree.core _command_ _command-options_
+    java -cp `lein classpath` utree.core _command_ _command-options_
 
 Alternatively, you can build a standalone jar and run that directly:
-    lein2 uberjar
-    java -cp target/utree-0.0.3-standalone.jar _command_ _command-options_
+    lein uberjar
+    java -cp target/utree-0.0.4-standalone.jar _command_ _command-options_
 
 Subcommands are:
 
@@ -45,13 +45,13 @@ Subcommands are:
 Command: dot
 ---------------
 
-    java -cp `lein2 classpath` utree.core dot _filename_
+    java -cp `lein classpath` utree.core dot _filename_
 
 Use _filename_ as the input file (format below).
 
 Example:
 
-    java -cp `lein2 classpath` utree.core dot sample.ut | dot -Tpng -osample.png
+    java -cp `lein classpath` utree.core dot sample.ut | dot -Tpng -osample.png
 
 Command: radar-plots
 --------------------
@@ -61,8 +61,8 @@ through `solution_n.png`.
 
 Example:
 
-    java -cp target/utree-0.0.3-standlone.jar radar-plots example/alternatives.ut
-    
+    java -cp target/utree-0.0.4-standlone.jar radar-plots example/alternatives.ut
+
 This will create solution\_0.png through solution\_3.png, showing how
 the different alternative solutions score on the axes that matter.
 
@@ -80,7 +80,7 @@ Example:
 
     -- Utility
     # Quality attribute lines follow
-    
+
     -- Alternatives
     # Solution alternatives follow
 
@@ -156,4 +156,3 @@ Process](http://en.wikipedia.org/wiki/Analytic_Hierarchy_Process).
 
 At this time, weights only appear as annotations on the quality
 scenarios. Watch this space for more.
-
